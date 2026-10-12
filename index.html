@@ -28,10 +28,11 @@ main{padding:10px}
 .cnt{display:flex;align-items:center;gap:6px}.cnt button{width:30px;height:30px;padding:0;background:#334155;color:#fff;font-size:18px}.cnt span{min-width:22px;text-align:center}
 .del{background:#7f1d1d;color:#fff;width:30px;height:30px;padding:0}.cl{color:#94a3b8;margin-right:2px}.add:disabled{opacity:.4}.add{margin-top:8px;background:#0f766e;color:#fff;width:100%}.pic{width:64px;height:64px;border-radius:10px;background:#0f172a url(sprites.png) 0 0/960px auto no-repeat;flex:none;object-fit:contain}.top>div:first-of-type{}.gr{display:block}.R .add{margin-top:10px}
 @media(min-width:600px){.gr{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}.R .add{margin-top:0;padding:14px;font-size:16px}.R .ctl:first-of-type{margin-top:10px}}
+.hero{height:clamp(110px,30vw,220px);background:#0f172a url(banner.jpg) center/cover no-repeat;padding-top:env(safe-area-inset-top)}
 .tools{display:flex;gap:8px;padding:10px;justify-content:center}.tools button{background:#334155;color:#fff}
 .empty{text-align:center;color:#94a3b8;padding:30px}
 </style></head><body>
-<header><h1><span>Aniimo Tracker <small style="font-weight:400;opacity:.7;font-size:11px">v9</small></span><span id="stat" style="font-size:13px"></span></h1><div class="bar"><i id="pb"></i></div>
+<div class="hero"></div><header><h1><span style="display:flex;align-items:center;gap:8px"><img src="logo.png" width="28" height="28" style="border-radius:8px" alt="">Aniimo Tracker <small style="font-weight:400;opacity:.7;font-size:11px">v10</small></span><span id="stat" style="font-size:13px"></span></h1><div class="bar"><i id="pb"></i></div>
 <input id="q" type="search" placeholder="Search name, form, habitat…">
 <div class="f"><select id="fe"></select><select id="fr"></select><select id="fc"><option value="">All status</option><option value="y">Collected</option><option value="n">Missing</option></select><select id="fh"></select></div></header>
 <div id="warn" style="display:none;background:#b91c1c;color:#fff;padding:10px;text-align:center">⚠ Your browser is blocking storage — progress will NOT be saved. Open this in normal (non-private) Safari or the home-screen app, and use Export to back up.</div><main id="m"></main>
