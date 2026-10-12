@@ -18,7 +18,7 @@ main{padding:10px}
 .sh{padding:12px;display:flex;justify-content:space-between;align-items:center}.sh b{font-size:16px}.sh small{color:#94a3b8}
 .forms{display:none;border-top:1px solid #334155}.sp.open .forms{display:block}
 .fm{padding:10px 12px;border-bottom:1px solid #334155}.fm:last-child{border:0}.fm.got{background:#14532d55}
-.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .chk{width:30px;height:30px;border-radius:8px;border:2px solid #64748b;background:none;color:#fff;font-size:18px;padding:0;flex:none}
 .got .chk{background:#22c55e;border-color:#22c55e}
 .tag{display:inline-block;background:#334155;border-radius:10px;padding:1px 8px;font-size:12px;margin:3px 3px 0 0}
@@ -26,7 +26,7 @@ main{padding:10px}
 .ctl{display:flex;gap:8px;align-items:center;margin-top:8px}
 .ctl select{background:#334155;color:#fff;padding:6px;flex:1}
 .cnt{display:flex;align-items:center;gap:6px}.cnt button{width:30px;height:30px;padding:0;background:#334155;color:#fff;font-size:18px}.cnt span{min-width:22px;text-align:center}
-.tools{display:flex;gap:8px;padding:10px;justify-content:center}.tools button{background:#334155;color:#fff}
+.del{background:#7f1d1d;color:#fff;width:30px;height:30px;padding:0}.add{margin-top:8px;background:#0f766e;color:#fff;width:100%}.pic{width:64px;height:64px;border-radius:10px;background:#0f172a url(sprites.png) 0 0/960px auto no-repeat;flex:none;object-fit:contain}.top>div:first-of-type{}.tools{display:flex;gap:8px;padding:10px;justify-content:center}.tools button{background:#334155;color:#fff}
 .empty{text-align:center;color:#94a3b8;padding:30px}
 </style></head><body>
 <header><h1><span>Aniimo Tracker</span><span id="stat" style="font-size:13px"></span></h1><div class="bar"><i id="pb"></i></div>
@@ -40,7 +40,7 @@ const D=[{"n":1,"name":"Emberpup","form":"Basic Form","el":["Fire"],"role":"DPS"
 const RAR=["","Perfect","Sparkling","Prismana","Umbral","Dazzling","Sparkling Perfect","Sparkling Prismana","Sparkling Umbral","Dazzling Sparkling","Sparkling Umbral Prismana","Dazzling Sparkling Umbral Prismana","Umbral Prismana"];
 let S={};try{S=JSON.parse(localStorage.getItem('aniimo')||'{}')}catch(e){}
 const save=()=>{try{localStorage.setItem('aniimo',JSON.stringify(S))}catch(e){}};
-const key=d=>d.n+'|'+d.form, st=d=>S[key(d)]||{c:0,r:'',got:0};
+const key=d=>d.n+'|'+d.form, st=d=>{const s=S[key(d)]||{got:0};if(!s.e)s.e=(s.c||s.r)?[{r:s.r||'',c:s.c||1}]:[];return s};
 const open=new Set(), $=id=>document.getElementById(id);
 const uniq=a=>[...new Set(a)].sort();
 const opts=(el,label,arr)=>el.innerHTML=`<option value="">${label}</option>`+arr.map(x=>`<option>${x}</option>`).join('');
@@ -57,20 +57,21 @@ function render(){
   (g[d.n]=g[d.n]||{name:d.name,n:d.n,f:[]}).f.push(d)});
  const keys=Object.keys(g).sort((a,b)=>a-b),filtering=q||fe||fr||fc||fh;
  $('m').innerHTML=keys.length?keys.map(k=>{const x=g[k],got=x.f.filter(d=>st(d).got).length;
-  const tot=x.f.reduce((a,d)=>a+(st(d).c||0),0);
+  const tot=x.f.reduce((a,d)=>a+st(d).e.reduce((b,e)=>b+(e.c||0),0),0);
   return `<div class="sp ${open.has(k)||filtering?'open':''}" data-k="${k}"><div class="sh" onclick="tg('${k}')"><b>#${x.n} ${x.name}</b><small>${got}/${x.f.length} forms${tot?' · ×'+tot:''}</small></div><div class="forms">`+
-  x.f.map(d=>{const s=st(d),i=D.indexOf(d);return `<div class="fm ${s.got?'got':''}"><div class="top"><div><b>${d.form}</b><br>${d.el.map(e=>`<span class="tag">${e}</span>`).join('')}<span class="tag">${d.role}</span></div><button class="chk" onclick="tc(${i})">${s.got?'✓':''}</button></div>
+  x.f.map(d=>{const s=st(d),i=D.indexOf(d);return `<div class="fm ${s.got?'got':''}"><div class="top"><div class="pic" style="background-position:-${(i%15)*64}px -${Math.floor(i/15)*64}px"></div><div style="flex:1"><b>${d.form}</b><br>${d.el.map(e=>`<span class="tag">${e}</span>`).join('')}<span class="tag">${d.role}</span></div><button class="chk" onclick="tc(${i})">${s.got?'✓':''}</button></div>
   <div class="d">${d.ab?'Ability: '+d.ab+'<br>':''}${d.sk?'Skills: '+d.sk+'<br>':''}${d.home?'Home: '+d.home+'<br>':''}Habitat: ${d.hab}</div>
-  <div class="ctl"><select onchange="sr(${i},this.value)">${RAR.map(r=>`<option value="${r}" ${s.r===r?'selected':''}>${r||'Rarity…'}</option>`).join('')}</select>
-  <div class="cnt"><button onclick="cn(${i},-1)">−</button><span>${s.c||0}</span><button onclick="cn(${i},1)">+</button></div></div></div>`}).join('')+`</div></div>`}).join(''):'<div class="empty">No matches</div>';
+  ${s.e.map((e,j)=>`<div class="ctl"><select onchange="er(${i},${j},this.value)">${RAR.map(r=>`<option value="${r}" ${e.r===r?'selected':''}>${r||'Rarity…'}</option>`).join('')}</select><div class="cnt"><button onclick="ec(${i},${j},-1)">−</button><span>${e.c}</span><button onclick="ec(${i},${j},1)">+</button></div><button class="del" onclick="ed(${i},${j})">✕</button></div>`).join('')}<button class="add" onclick="ea(${i})">+ Add entry</button></div></div>`}).join('')+`</div></div>`}).join(''):'<div class="empty">No matches</div>';
  const all=D.filter(d=>st(d).got).length;
  $('stat').textContent=`${all}/${D.length} forms`;$('pb').style.width=(all/D.length*100)+'%';
 }
 function tg(k){open.has(k)?open.delete(k):open.add(k);const e=document.querySelector(`[data-k="${k}"]`);e&&e.classList.toggle('open')}
-function up(i,f){const d=D[i],s=Object.assign({c:0,r:'',got:0},S[key(d)]);f(s);S[key(d)]=s;save();render()}
-const tc=i=>up(i,s=>{s.got=s.got?0:1;if(s.got&&!s.c)s.c=1});
-const cn=(i,v)=>up(i,s=>{s.c=Math.max(0,(s.c||0)+v);s.got=s.c>0?1:s.got});
-const sr=(i,v)=>up(i,s=>s.r=v);
+function up(i,f){const d=D[i],s=Object.assign({got:0},st(d));f(s);delete s.c;delete s.r;S[key(d)]=s;save();render()}
+const tc=i=>up(i,s=>{s.got=s.got?0:1;if(s.got&&!s.e.length)s.e.push({r:'',c:1})});
+const ea=i=>up(i,s=>{s.e.push({r:'',c:1});s.got=1});
+const ed=(i,j)=>up(i,s=>s.e.splice(j,1));
+const ec=(i,j,v)=>up(i,s=>s.e[j].c=Math.max(1,s.e[j].c+v));
+const er=(i,j,v)=>up(i,s=>s.e[j].r=v);
 ['q','fe','fr','fc','fh'].forEach(id=>$(id).addEventListener('input',render));
 $('ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='aniimo-progress.json';a.click()};
 $('im').onclick=()=>$('fi').click();
