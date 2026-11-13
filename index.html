@@ -24,7 +24,7 @@ main{padding:10px}
 .tag{display:inline-block;background:#334155;border-radius:10px;padding:1px 8px;font-size:12px;margin:3px 3px 0 0}
 .d{font-size:12px;color:#94a3b8;margin-top:4px;line-height:1.4}
 .ctl{display:flex;gap:8px;align-items:center;margin-top:8px}
-.ctl select{background:#334155;color:#fff;padding:6px;flex:1 1 0;min-width:0;width:0}.ctl .cnt,.ctl .del{flex:none}.btns{display:flex;gap:8px}.btns .rmv{flex:1}.edt{background:#334155!important}
+.ctl{flex-wrap:wrap}.ctl select{background:#334155;color:#fff;padding:6px;flex:1 1 40%;min-width:0;width:0}.ctl .cnt,.ctl .del{flex:none}.ctl .cnt{margin-left:auto}.btns{display:flex;gap:8px}.btns .rmv{flex:1}.edt{background:#334155!important}
 .cnt{display:flex;align-items:center;gap:6px}.cnt button{width:30px;height:30px;padding:0;background:#334155;color:#fff;font-size:18px}.cnt span{min-width:22px;text-align:center}
 .del{background:#7f1d1d;color:#fff;width:30px;height:30px;padding:0}.cl{color:#94a3b8;margin-right:2px}.add:disabled{opacity:.4}.add{margin-top:8px;background:#0f766e;color:#fff;width:100%}.pic{width:64px;height:64px;border-radius:10px;background:#0f172a url(sprites.png) 0 0/960px auto no-repeat;flex:none;object-fit:contain}.top>div:first-of-type{}.gr{display:block}.R .add{margin-top:10px}
 @media(min-width:600px){.gr{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}.R .add{margin-top:0;padding:14px;font-size:16px}.R .ctl:first-of-type{margin-top:10px}}
@@ -36,7 +36,7 @@ body{background:linear-gradient(#7cc4f0 0,#0f172a 300px) #0f172a}
 .tools{display:flex;gap:8px;padding:10px;justify-content:center}.tools button{background:#334155;color:#fff}
 .empty{text-align:center;color:#94a3b8;padding:30px}
 </style></head><body>
-<div class="hero"></div><header><h1><span style="display:flex;align-items:center;gap:8px"><img src="logo.png" width="28" height="28" style="border-radius:8px" alt="">Aniimo Tracker <small style="font-weight:400;opacity:.7;font-size:11px">v13</small></span><span id="stat" style="font-size:13px"></span></h1><div class="bar"><i id="pb"></i></div>
+<div class="hero"></div><header><h1><span style="display:flex;align-items:center;gap:8px"><img src="logo.png" width="28" height="28" style="border-radius:8px" alt="">Aniimo Tracker <small style="font-weight:400;opacity:.7;font-size:11px">v15</small></span><span id="stat" style="font-size:13px"></span></h1><div class="bar"><i id="pb"></i></div>
 <div class="sr"><input id="q" type="search" placeholder="Search name, form, habitat…" enterkeyhint="search"><button id="sb">Search</button><button id="nb">+ New</button></div>
 <div class="f"><select id="fe"></select><select id="fr"></select><select id="fc"><option value="">All status</option><option value="y">Collected</option><option value="n">Missing</option></select><select id="fh"></select></div></header>
 <div id="warn" style="display:none;background:#b91c1c;color:#fff;padding:10px;text-align:center">⚠ Your browser is blocking storage — progress will NOT be saved. Open this in normal (non-private) Safari or the home-screen app, and use Export to back up.</div><main id="m"></main>
@@ -64,14 +64,15 @@ D.forEach((d,i)=>{d._k=d.n+'|'+d.form;d._s=i;if(E[d._k])Object.assign(d,E[d._k])
 for(let k=D.length-1;k>=0;k--)if(X.includes(D[k]._k))D.splice(k,1);
 C.forEach(c=>D.push(c));
 const saveC=()=>{try{localStorage.setItem('aniimo_custom',JSON.stringify(C))}catch(e){}};
-const RAR=["","Perfect","Sparkling","Prismana","Umbral","Dazzling","Sparkling Perfect","Sparkling Prismana","Sparkling Umbral","Dazzling Sparkling","Sparkling Umbral Prismana","Dazzling Sparkling Umbral Prismana","Umbral Prismana"];
+const RAR=["Common","Good","Elite","Perfect"],VAR=["Umbral","Prismana","Sparkling","Dazzling","Sparkling Prismana","Dazzling Sparkling","Sparkling Umbral","Dazzling Sparkling Prismana","Dazzling Sparkling Umbral"],MAXC=RAR.length*(VAR.length+1);
 let S={};try{S=JSON.parse(localStorage.getItem('aniimo')||'{}')}catch(e){}
 let saveOK=true;
 const save=()=>{try{localStorage.setItem('aniimo',JSON.stringify(S));if(localStorage.getItem('aniimo')!==JSON.stringify(S))throw 0;saveOK=true}catch(e){saveOK=false}
  const w=$('warn');if(w)w.style.display=saveOK?'none':'block'};
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 document.addEventListener('visibilitychange',()=>save());window.addEventListener('pagehide',()=>save());
-const key=d=>d.n+'|'+d.form, st=d=>{const s=S[key(d)]||{got:0};if(!s.e)s.e=(s.c||s.r)?[{r:s.r||'',c:s.c||1}]:[];return s};
+const key=d=>d.n+'|'+d.form, st=d=>{const s=S[key(d)]||{got:0};if(!s.e)s.e=(s.c||s.r)?[{r:s.r||'',c:s.c||1}]:[];
+ s.e.forEach(e=>{if(e.r&&!RAR.includes(e.r)){const o=e.r;if(/Perfect/.test(o)){e.r='Perfect';const v=o.replace('Perfect','').trim();if(v&&!e.v)e.v=v}else{e.r='';if(!e.v)e.v=o}}});return s};
 const open=new Set(), $=id=>document.getElementById(id);
 const uniq=a=>[...new Set(a)].sort();
 const opts=(el,label,arr)=>el.innerHTML=`<option value="">${label}</option>`+arr.map(x=>`<option>${x}</option>`).join('');
@@ -92,17 +93,18 @@ function render(){
  $('m').innerHTML=keys.length?keys.map(k=>{const x=g[k],got=x.f.filter(d=>st(d).got).length;
   const tot=x.f.reduce((a,d)=>a+st(d).e.reduce((b,e)=>b+(e.c||0),0),0);
   return `<div class="sp ${open.has(k)||filtering?'open':''}" data-k="${k}"><div class="sh" onclick="tg('${k}')"><b>#${x.n} ${x.name}</b><small>${got}/${x.f.length} forms${tot?' · ×'+tot:''}</small></div><div class="forms">`+
-  x.f.map(d=>{const s=st(d),i=D.indexOf(d);return `<div class="fm ${s.got?'got':''}"><div class="gr"><div class="L"><div class="top"><div class="pic" style="${d.img?`background:#0f172a url(${d.img}) center/cover no-repeat`:`background-position:-${((d._s??i)%15)*64}px -${Math.floor((d._s??i)/15)*64}px`}"></div><div style="flex:1"><b>${d.form}</b><br>${d.el.map(e=>`<span class="tag">${e}</span>`).join('')}<span class="tag">${d.role}</span></div><button class="chk" onclick="tc(${i})">${s.got?'✓':''}</button></div><div class="d">${d.ab?'Ability: '+d.ab+'<br>':''}${d.sk?'Skills: '+d.sk+'<br>':''}${d.home?'Home: '+d.home+'<br>':''}Habitat: ${d.hab}</div><div class="btns"><button class="rmv edt" onclick="ee(${i})">Edit</button><button class="rmv" onclick="dc(${i})">Delete</button></div></div><div class="R"><button class="add" ${s.e.length>=RAR.length-1?'disabled':''} onclick="ea(${i})">Add Collection${s.e.length?` (${s.e.length}/${RAR.length-1})`:''}</button>${s.e.map((e,j)=>`<div class="ctl"><select onchange="er(${i},${j},this.value)"><option value="">Collection ${j+1} (Rarity)</option>${RAR.slice(1).map(r=>`<option value="${r}" ${e.r===r?'selected':''} ${s.e.some((o,k)=>k!==j&&o.r===r)?'disabled':''}>${r}</option>`).join('')}</select><div class="cnt"><small class="cl">Count</small><button onclick="ec(${i},${j},-1)">−</button><span>${e.c}</span><button onclick="ec(${i},${j},1)">+</button></div><button class="del" onclick="ed(${i},${j})">✕</button></div>`).join('')}</div></div></div>`}).join('')+`<div class="fm"><button class="add" onclick="af(${k})">+ Add form to #${x.n} ${x.name}</button></div></div></div>`}).join(''):'<div class="empty">No matches</div>';
+  x.f.map(d=>{const s=st(d),i=D.indexOf(d);return `<div class="fm ${s.got?'got':''}"><div class="gr"><div class="L"><div class="top"><div class="pic" style="${d.img?`background:#0f172a url(${d.img}) center/cover no-repeat`:`background-position:-${((d._s??i)%15)*64}px -${Math.floor((d._s??i)/15)*64}px`}"></div><div style="flex:1"><b>${d.form}</b><br>${d.el.map(e=>`<span class="tag">${e}</span>`).join('')}<span class="tag">${d.role}</span></div><button class="chk" onclick="tc(${i})">${s.got?'✓':''}</button></div><div class="d">${d.ab?'Ability: '+d.ab+'<br>':''}${d.sk?'Skills: '+d.sk+'<br>':''}${d.home?'Home: '+d.home+'<br>':''}Habitat: ${d.hab}</div><div class="btns"><button class="rmv edt" onclick="ee(${i})">Edit</button><button class="rmv" onclick="dc(${i})">Delete</button></div></div><div class="R"><button class="add" ${s.e.length>=MAXC?'disabled':''} onclick="ea(${i})">Add Collection${s.e.length?` (${s.e.length}/${MAXC})`:''}</button>${s.e.map((e,j)=>`<div class="ctl"><select onchange="er(${i},${j},this.value)"><option value="">Collection ${j+1} (Rarity)</option>${RAR.map(r=>`<option value="${r}" ${e.r===r?'selected':''} ${s.e.some((o,k)=>k!==j&&o.r===r&&(o.v||'')===(e.v||''))?'disabled':''}>${r}</option>`).join('')}</select><select onchange="ev(${i},${j},this.value)"><option value="">Variant (none)</option>${(e.v&&!VAR.includes(e.v)?[e.v]:[]).concat(VAR).map(v=>`<option value="${v}" ${e.v===v?'selected':''} ${s.e.some((o,k)=>k!==j&&(o.v||'')===v&&(o.r||'')===(e.r||''))?'disabled':''}>${v}</option>`).join('')}</select><div class="cnt"><small class="cl">Count</small><button onclick="ec(${i},${j},-1)">−</button><span>${e.c}</span><button onclick="ec(${i},${j},1)">+</button></div><button class="del" onclick="ed(${i},${j})">✕</button></div>`).join('')}</div></div></div>`}).join('')+`<div class="fm"><button class="add" onclick="af(${k})">+ Add form to #${x.n} ${x.name}</button></div></div></div>`}).join(''):'<div class="empty">No matches</div>';
  const all=D.filter(d=>st(d).got).length;
  $('stat').textContent=`${all}/${D.length} forms`;$('pb').style.width=(all/D.length*100)+'%';
 }
 function tg(k){open.has(k)?open.delete(k):open.add(k);const e=document.querySelector(`[data-k="${k}"]`);e&&e.classList.toggle('open')}
 function up(i,f){const d=D[i],s=Object.assign({got:0},st(d));f(s);delete s.c;delete s.r;S[key(d)]=s;save();render()}
 const tc=i=>up(i,s=>{s.got=s.got?0:1;if(s.got&&!s.e.length)s.e.push({r:'',c:1})});
-const ea=i=>up(i,s=>{if(s.e.length>=RAR.length-1)return;s.e.push({r:'',c:1});s.got=1});
+const ea=i=>up(i,s=>{if(s.e.length>=MAXC)return;s.e.push({r:'',c:1});s.got=1});
 const ed=(i,j)=>up(i,s=>s.e.splice(j,1));
 const ec=(i,j,v)=>up(i,s=>s.e[j].c=Math.max(1,s.e[j].c+v));
 const er=(i,j,v)=>up(i,s=>s.e[j].r=v);
+const ev=(i,j,v)=>up(i,s=>s.e[j].v=v);
 const go=()=>{render();$('q').blur();window.scrollTo(0,0)};
 $('sb').onclick=go;$('q').addEventListener('keydown',e=>{if(e.key==='Enter')go()});
 let editing=null;
